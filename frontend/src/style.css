@@ -1,0 +1,58 @@
+:root {
+  --jiayin-primary: #f59e5b;
+  --jiayin-primary-deep: #e8833a;
+  --jiayin-bg: #fdf8f2;
+  --jiayin-card: #ffffff;
+  --jiayin-text: #3d2f24;
+  --jiayin-text-light: #8a7a6d;
+  --jiayin-accent: #f7c873;
+}
+
+* { box-sizing: border-box; }
+
+html, body {
+  margin: 0;
+  padding: 0;
+  background: var(--jiayin-bg);
+  color: var(--jiayin-text);
+  font-family: -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Microsoft YaHei', sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+#app {
+  max-width: 480px;
+  margin: 0 auto;
+  min-height: 100vh;
+}
+
+.page {
+  padding: 16px 16px 80px;
+}
+
+.page-title {
+  font-size: 22px;
+  font-weight: 700;
+  margin: 12px 0 4px;
+}
+
+.page-sub {
+  font-size: 13px;
+  color: var(--jiayin-text-light);
+  margin-bottom: 16px;
+  line-height: 1.6;
+}
+
+.card {
+  background: var(--jiayin-card);
+  border-radius: 16px;
+  padding: 16px;
+  margin-bottom: 14px;
+  box-shadow: 0 2px 12px rgba(61, 47, 36, 0.06);
+}
+
+.gradient-btn {
+  background: linear-gradient(135deg, var(--jiayin-accent), var(--jiayin-primary));
+  border: none;
+  color: #fff;
+  font-weight: 600;
+}
