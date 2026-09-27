@@ -1,5 +1,8 @@
 <template>
   <div class="page">
+    <!-- 家音小助手：迷你小人打招呼 -->
+    <MascotGreet />
+
     <!-- 今日卡：日期 + 节日倒计时 -->
     <div class="card today-bar">
       <span class="today-date">📅 {{ todayText }}</span>
@@ -88,6 +91,7 @@ import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { showConfirmDialog, showToast } from 'vant'
 import ProfilePopup from '../components/ProfilePopup.vue'
+import MascotGreet from '../components/MascotGreet.vue'
 import { getProfile, isProfileEmpty } from '../store/profile'
 import { getHistory, clearHistory, TYPE_META } from '../store/history'
 import { checkedToday, streak as checkinStreakFn, gentleNudge, getCheckins } from '../store/checkin'
