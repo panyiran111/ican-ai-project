@@ -91,6 +91,7 @@ import { useRouter } from 'vue-router'
 import { showToast, showSuccessToast } from 'vant'
 import { profileSummary } from '../store/profile'
 import { addRecord } from '../store/history'
+import { gain } from '../store/pet'
 import { useRecognition, useSpeaker } from '../composables/useSpeech'
 import { apiUrl } from '../api'
 
@@ -151,6 +152,8 @@ async function generate() {
     if (!res.ok) throw new Error()
     result.value = await res.json()
     addRecord('reply', result.value.replies?.normal || result.value.scene_name, result.value)
+    const g = gain('reply')
+    if (g?.levelUp) showToast(`家里的宠物长大成「${g.stage}」啦 🎉`)
   } catch {
     showToast('生成失败，请稍后再试')
   } finally {

@@ -72,6 +72,7 @@
 import { ref, nextTick } from 'vue'
 import { showToast } from 'vant'
 import { addRecord } from '../store/history'
+import { gain } from '../store/pet'
 import { apiUrl } from '../api'
 
 const scenes = [
@@ -137,6 +138,8 @@ async function send() {
     messages.value.push({ role: 'assistant', content: data.reply })
     if (data.turn === 3) {
       addRecord('rehearsal', `和 AI${meta.value.parent}练了「${meta.value.sceneName}」，练到第 3 轮`, { scene: meta.value.sceneName })
+      const g = gain('rehearsal')
+      if (g?.levelUp) showToast(`家里的宠物长大成「${g.stage}」啦 🎉`)
     }
   } catch {
     messages.value.push({ role: 'assistant', content: '（信号不好，刚才那句妈没听清，你再说一遍？）' })

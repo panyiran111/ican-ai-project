@@ -1,5 +1,9 @@
 """家音 · AI 家庭沟通翻译官 —— 后端服务"""
+import json
 import os
+import urllib.request
+from urllib.parse import quote
+
 from dotenv import load_dotenv
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
@@ -103,3 +107,83 @@ def rehearsal_talk(req: RehearsalChatRequest):
     if result is None:
         raise HTTPException(status_code=404, detail="会话不存在或已过期，请重新开始彩排")
     return result
+
+
+# ---------- 老家天气（Open-Meteo 免费无 Key；失败降级示例数据，永不翻车） ----------
+
+WEATHER_CODES = {
+    0: ("晴", "☀️"), 1: ("多云", "⛅"), 2: ("多云", "🌤️"), 3: ("阴", "☁️"),
+    45: ("雾", "🌫️"), 48: ("雾凇", "🌫️"),
+    51: ("毛毛雨", "🌦️"), 53: ("毛毛雨", "🌦️"), 55: ("毛毛雨", "🌦️"),
+    61: ("小雨", "🌧️"), 63: ("中雨", "🌧️"), 65: ("大雨", "🌧️"),
+    66: ("冻雨", "🌧️"), 67: ("冻雨", "🌧️"),
+    71: ("小雪", "🌨️"), 73: ("中雪", "❄️"), 75: ("大雪", "❄️"), 77: ("雪粒", "🌨️"),
+    80: ("阵雨", "🌦️"), 81: ("阵雨", "🌧️"), 82: ("强阵雨", "⛈️"),
+    85: ("阵雪", "🌨️"), 86: ("阵雪", "🌨️"),
+    95: ("雷阵雨", "⛈️"), 96: ("雷阵雨伴冰雹", "⛈️"), 99: ("雷阵雨伴冰雹", "⛈️"),
+}
+
+
+def _http_json(url: str, timeout: int = 6) -> dict:
+    req = urllib.request.Request(url, headers={"User-Agent": "jiayin/1.0"})
+    with urllib.request.urlopen(req, timeout=timeout) as r:
+        return json.loads(r.read().decode("utf-8"))
+
+
+def _weather_tip(desc: str, temp) -> str:
+    """把天气翻译成一句关心建议"""
+    if "雨" in desc:
+        return f"老家{desc}，提醒爸妈出门带伞、走路慢一点"
+    if "雪" in desc:
+        return f"老家{desc}了，问问爸妈保暖的衣裳够不够"
+    if isinstance(temp, (int, float)):
+        if temp <= 8:
+            return f"老家只有 {temp}℃，给爸妈发一句「加件衣服」吧"
+        if temp >= 32:
+            return f"老家 {temp}℃ 高温，提醒爸妈中午少出门、多喝水"
+    return "把老家的天气发给爸妈，就是一句现成的关心"
+
+
+@app.get("/api/weather")
+def weather(city: str = ""):
+    """老家天气：city 为小档案里的「老家」字段；网络失败时返回示例数据（demo=True）"""
+    city = (city or "").strip()[:20]
+    if not city:
+        raise HTTPException(status_code=400, detail="请先在「我家小档案」填写老家")
+    try:
+        geo = _http_json(
+            f"https://geocoding-api.open-meteo.com/v1/search?name={quote(city)}&count=1&language=zh&format=json"
+        )
+        results = geo.get("results") or []
+        if not results and len(city) > 2:
+            # 「山东济南」→「济南」重试
+            geo = _http_json(
+                f"https://geocoding-api.open-meteo.com/v1/search?name={quote(city[-2:])}&count=1&language=zh&format=json"
+            )
+            results = geo.get("results") or []
+        if not results:
+            raise ValueError("geocoding empty")
+        r = results[0]
+        w = _http_json(
+            "https://api.open-meteo.com/v1/forecast"
+            f"?latitude={r['latitude']}&longitude={r['longitude']}"
+            "&current=temperature_2m,weather_code"
+            "&daily=temperature_2m_max,temperature_2m_min&forecast_days=1&timezone=auto"
+        )
+        cur = w.get("current") or {}
+        temp = cur.get("temperature_2m")
+        desc, emoji = WEATHER_CODES.get(cur.get("weather_code"), ("多云", "🌤️"))
+        daily = w.get("daily") or {}
+        tmax = (daily.get("temperature_2m_max") or [None])[0]
+        tmin = (daily.get("temperature_2m_min") or [None])[0]
+        return {
+            "ok": True, "demo": False, "city": r.get("name") or city,
+            "temp": temp, "desc": desc, "emoji": emoji, "tmax": tmax, "tmin": tmin,
+            "tip": _weather_tip(desc, temp),
+        }
+    except Exception:
+        return {
+            "ok": False, "demo": True, "city": city,
+            "temp": 18, "desc": "晴", "emoji": "☀️", "tmax": 23, "tmin": 12,
+            "tip": "把老家的天气发给爸妈，就是一句现成的关心",
+        }

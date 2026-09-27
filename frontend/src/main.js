@@ -11,7 +11,8 @@ const routes = [
   { path: '/reply', name: 'reply', component: () => import('./views/ReplyView.vue'), meta: { title: '回音壁' } },
   { path: '/rehearsal', name: 'rehearsal', component: () => import('./views/RehearsalView.vue'), meta: { title: '彩排室' } },
   { path: '/topic', name: 'topic', component: () => import('./views/TopicView.vue'), meta: { title: '连心话题卡' } },
-  { path: '/checkin', name: 'checkin', component: () => import('./views/CheckinView.vue'), meta: { title: '安心打卡' } }
+  { path: '/checkin', name: 'checkin', component: () => import('./views/CheckinView.vue'), meta: { title: '安心打卡' } },
+  { path: '/pet', name: 'pet', component: () => import('./views/PetView.vue'), meta: { title: '合养小宠物' } }
 ]
 
 const router = createRouter({

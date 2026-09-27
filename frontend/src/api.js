@@ -18,3 +18,9 @@ export async function apiPost(path, body) {
   if (!res.ok) throw new Error(`API ${path} -> ${res.status}`)
   return res.json()
 }
+
+export async function apiGet(path) {
+  const res = await fetch(apiUrl(path))
+  if (!res.ok) throw new Error(`API ${path} -> ${res.status}`)
+  return res.json()
+}

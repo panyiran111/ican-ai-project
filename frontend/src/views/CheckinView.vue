@@ -95,6 +95,7 @@ import {
   streak, peaceLevel, earnedBadges, nextBadge
 } from '../store/checkin'
 import { addRecord } from '../store/history'
+import { gain } from '../store/pet'
 
 const streakDays = ref(0)
 const peace = ref(0)
@@ -145,7 +146,10 @@ async function submit() {
   try {
     addCheckin({ photo: photo.value, note: note.value.trim() })
     addRecord('checkin', note.value.trim() || '今日安心打卡（附照片）', { day: new Date().toLocaleDateString() })
-    showSuccessToast(streakDays.value === 0 ? '打卡成功，安心值 +1 天！' : `已连续 ${streakDays.value + 1} 天，安心值上涨！`)
+    const g = gain('checkin')
+    showSuccessToast(g?.levelUp
+      ? `打卡成功！宠物也长大成「${g.stage}」啦 🎉`
+      : streakDays.value === 0 ? '打卡成功，安心值 +1 天！' : `已连续 ${streakDays.value + 1} 天，安心值上涨！`)
     photo.value = ''
     note.value = ''
     refresh()

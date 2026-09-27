@@ -71,6 +71,7 @@ import { useRouter } from 'vue-router'
 import { showToast } from 'vant'
 import { profileSummary } from '../store/profile'
 import { addRecord } from '../store/history'
+import { gain } from '../store/pet'
 import { useRecognition } from '../composables/useSpeech'
 import { apiUrl } from '../api'
 
@@ -99,6 +100,8 @@ async function decode() {
     if (!res.ok) throw new Error()
     result.value = await res.json()
     addRecord('decode', result.value.core, result.value)
+    const g = gain('decode')
+    if (g?.levelUp) showToast(`家里的宠物长大成「${g.stage}」啦 🎉`)
   } catch {
     showToast('解码失败，请稍后再试')
   } finally {
