@@ -17,6 +17,17 @@
 </template>
 
 <script setup>
+import { onMounted } from 'vue'
+import { showToast } from 'vant'
+import { isDemoSeedQuery, seedDemoData } from './store/demoSeed'
+
+onMounted(() => {
+  // 演示模式：/?demo=seed 一键预埋演示数据（录屏前用）
+  if (isDemoSeedQuery()) {
+    seedDemoData()
+    showToast('演示数据已就绪 🎬')
+  }
+})
 </script>
 
 <style scoped>
