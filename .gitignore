@@ -8,6 +8,9 @@ __pycache__/
 node_modules/
 frontend/dist/
 
+# Remotion 渲染产物（大文件不进仓库）
+docs/视频素材/remotion-video/output/
+
 # 运行日志
 *.out
 *.err
