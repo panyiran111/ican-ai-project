@@ -45,15 +45,20 @@ npm run dev              # http://localhost:5173
 ```
 
 ## 在线体验
-- 前端（Vercel）：https://____.vercel.app （D3 部署后填写）
-- 后端 API（Render）：https://____.onrender.com （D3 部署后填写）
+- 前端（Vercel）：https://____.vercel.app （D3 部署后填写，详见 `DEPLOY_STEPS.md`）
+- 后端 API（Render）：https://____.onrender.com （D3 部署后填写，详见 `DEPLOY_STEPS.md`）
+- 应急临时公网链接：双击 `emergency-demo.bat` → 1 分钟内生成 `https://xxx.trycloudflare.com`
 
 > 后端无 API Key 也能跑（自动降级内置演示剧本），Render 免费版冷启动约 30-60 秒，首次打开请稍候。
 
 ## 部署说明
 - 后端：仓库根目录 `render.yaml`（Render Blueprint，rootDir=backend，`uvicorn main:app --port $PORT`）
-- 前端：Vercel 导入同一仓库，Root Directory 选 `frontend`，在控制台添加环境变量 `VITE_API_BASE=<Render 后端地址>`
+- 前端：根目录 `vercel.json` + Vercel 导入同一仓库，Root Directory 选 `frontend`，在控制台添加环境变量 `VITE_API_BASE=<Render 后端地址>`
 - 本地开发：`frontend/.env.development` 留空即可（走 Vite 代理到 127.0.0.1:8000）
+- **零基础完整操作手册**：[`DEPLOY_STEPS.md`](./DEPLOY_STEPS.md) ← 推荐首次操作者看这个
+- **精简版操作手册**：[`DEPLOY_NOW.md`](./DEPLOY_NOW.md)
+- **一键推送脚本**：双击 `push-to-github.bat`（会引导填用户名/邮箱/仓库名）
+- 详细说明：[`docs/RENDER_DEPLOY.md`](./docs/RENDER_DEPLOY.md) / [`docs/VERCEL_DEPLOY.md`](./docs/VERCEL_DEPLOY.md)
 
 ## 演示剧本
 无 API Key 时，全部模块自动降级为内置演示数据（解码 10 场景 / 回音壁 10 场景 × 3 档 / 话题卡 4 场景 × 5 题 / 彩排室 4 场景 × 5 轮），保证演示永不翻车。
